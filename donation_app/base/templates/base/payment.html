@@ -1,0 +1,206 @@
+ {% load static %}
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <!-- Required meta tags -->
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+        <link rel="icon" href="{% static 'base/img/favicon.png' %}" type="image/png">
+        <title>Donate</title>
+        <!-- Bootstrap CSS -->
+        <!-- <link rel="stylesheet" href="{% static 'base/css/bootstrap.css' %}"> -->
+        <link rel="stylesheet" href="{% static 'base/vendors/linericon/style.css' %}">
+        <link rel="stylesheet" href="{% static 'base/css/font-awesome.min.css' %}">
+        <link rel="stylesheet" href="{% static 'base/vendors/lightbox/simpleLightbox.css' %}">
+        <link rel="stylesheet" href="{% static 'base/vendors/nice-select/css/nice-select.css' %}">
+        <!-- main css -->
+        <link rel="stylesheet" href="{% static 'base/css/style.css' %}">
+        <link rel="stylesheet" href="{% static 'base/css/responsive.css' %}">
+    </head>
+<body>    
+    <style type="text/css">
+        
+            /**
+             * The CSS shown here will not be introduced in the Quickstart guide, but shows
+             * how you can use CSS to style your Element's container.
+             */
+            .StripeElement {
+              box-sizing: border-box;
+
+              height: 40px;
+
+              padding: 10px 12px;
+
+              border: 1px solid transparent;
+              border-radius: 4px;
+              background-color: white;
+
+              box-shadow: 0 1px 3px 0 #e6ebf1;
+              -webkit-transition: box-shadow 150ms ease;
+              transition: box-shadow 150ms ease;
+            }
+
+            .StripeElement--focus {
+              box-shadow: 0 1px 3px 0 #cfd7df;
+            }
+
+            .StripeElement--invalid {
+              border-color: #fa755a;
+            }
+
+            .StripeElement--webkit-autofill {
+              background-color: #fefde5 !important;
+    </style>
+    
+    <script src="https://js.stripe.com/v3/"></script>
+
+    <div id='container'>
+        <div class='column-6'>
+            <div id='left-wrapper'>
+                <!-- <img id='profile-pic' src="{% static 'images/download.png' %}"> -->
+                <div id='left-wrapper-header' >
+                    <h3 style="color:Green;">Payment Information</h3>
+                    <hr>
+
+                </div>
+                <div style='clear:left'></div>
+                <div class="col-lg-9">
+
+                    <form class="row contact_form" action="{% url 'charge' %}" method="post" id="payment-form">
+                            {% csrf_token %}
+                              <div class="col-md-12">
+                                <div class="col-md-6">
+
+                                  <h4>Contribution of ${{amount}}</h4>
+                                  <div class="form-group">    
+                                      <div class="dollar">
+                                          <input required type="number" class="form-control" id="amount" name="amount" placeholder="Enter your amount">
+                                      </div>
+                                  </div>
+                                </div>
+                                <div class="col-md-6">
+
+                                  <div class="form-group">
+                                      <input required type="text" class="form-control" id="nickname" name="nickname" placeholder="Enter your name">
+                                  </div>
+                                  <div class="form-group">
+                                      <input required type="email" class="form-control" id="email" name="email" placeholder="Enter email address">
+                                  </div>
+                                </div>
+                                <h5>Donate via Credit or debit card</h5>
+
+                                <div class="form-row">
+                                    <div id="card-element">
+                                      <!-- A Stripe Element will be inserted here. -->
+                                    </div>
+
+                                    <!-- Used to display form errors. -->
+                                    <div id="card-errors" role="alert"></div>
+                                </div>
+                                <div class="col-md-12 text-right">
+                                      <button type="submit" value="Submit Payment" class="btn primary_btn">Payment</button>
+                                      <a target="_blank" href="{% url 'payment_checkout' %}" class="btn primary_btn">Via Paypal</a>
+                                </div>
+                                <br>
+                              </div>
+                    </form>
+
+                </div>
+            </div>
+        </div>
+    </div>
+    <script>
+        // Create a Stripe client.
+        var stripe = Stripe('pk_test_vu1JlbVJJlZCBhseWF5TA0gB00HUaRr55k');
+
+        // Create an instance of Elements.
+        var elements = stripe.elements();
+
+        // Custom styling can be passed to options when creating an Element.
+        // (Note that this demo uses a wider set of styles than the guide below.)
+        var style = {
+          base: {
+            color: '#32325d',
+            fontFamily: '"Helvetica Neue", Helvetica, sans-serif',
+            fontSmoothing: 'antialiased',
+            fontSize: '16px',
+            '::placeholder': {
+              color: '#aab7c4'
+            }
+          },
+          invalid: {
+            color: '#fa755a',
+            iconColor: '#fa755a'
+          }
+        };
+
+        // Create an instance of the card Element.
+        var card = elements.create('card', {style: style});
+
+        // Add an instance of the card Element into the `card-element` <div>.
+        card.mount('#card-element');
+
+        // Handle real-time validation errors from the card Element.
+        card.addEventListener('change', function(event) {
+          var displayError = document.getElementById('card-errors');
+          if (event.error) {
+            displayError.textContent = event.error.message;
+          } else {
+            displayError.textContent = '';
+          }
+        });
+
+        // Handle form submission.
+        var form = document.getElementById('payment-form');
+        form.addEventListener('submit', function(event) {
+          event.preventDefault();
+
+          stripe.createToken(card).then(function(result) {
+            if (result.error) {
+              // Inform the user if there was an error.
+              var errorElement = document.getElementById('card-errors');
+              errorElement.textContent = result.error.message;
+            } else {
+              // Send the token to your server.
+              stripeTokenHandler(result.token);
+            }
+          });
+        });
+
+        // Submit the form with the token ID.
+        function stripeTokenHandler(token) {
+          // Insert the token ID into the form so it gets submitted to the server
+          var form = document.getElementById('payment-form');
+          var hiddenInput = document.createElement('input');
+          hiddenInput.setAttribute('type', 'hidden');
+          hiddenInput.setAttribute('name', 'stripeToken');
+          hiddenInput.setAttribute('value', token.id);
+          form.appendChild(hiddenInput);
+
+          // Submit the form
+          form.submit();
+        }
+    </script>
+
+
+        <!-- Optional JavaScript -->
+        <!-- jQuery first, then Popper.js, then Bootstrap JS -->
+        <script src="{% static 'base/js/jquery-3.2.1.min.js' %}"></script>
+        <script src="{% static 'base/js/popper.js' %}"></script>
+        <script src="{% static 'base/js/bootstrap.min.js' %}"></script>
+        <script src="{% static 'base/js/stellar.js' %}"></script>
+        <script src="{% static 'base/vendors/lightbox/simpleLightbox.min.js' %}"></script>
+        <script src="{% static 'base/vendors/nice-select/js/jquery.nice-select.min.js' %}"></script>
+        <script src="{% static 'base/js/jquery.ajaxchimp.min.js' %}"></script>
+        <script src="{% static 'base/js/mail-script.js' %}"></script>
+        <!-- contact js -->
+        <script src="{% static 'base/js/jquery.form.js' %}"></script>
+        <script src="{% static 'base/js/jquery.validate.min.js' %}"></script>
+        <script src="js/contact.js"></script>
+        <!--gmaps Js-->
+        <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCjCGmQ0Uq4exrzdcL6rvxywDDOvfAu6eE"></script>
+        <script src="{% static 'base/js/gmaps.min.js' %}"></script>
+        <script src="{% static 'base/js/theme.js' %}"></script>
+
+</body>
+</html>

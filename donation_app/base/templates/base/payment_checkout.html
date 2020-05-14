@@ -1,0 +1,77 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <!-- Required meta tags -->
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+        <link rel="icon" href="{% static 'base/img/favicon.png' %}" type="image/png">
+        <title>Paypal payment</title>
+        <!-- Bootstrap CSS -->
+        <!-- <link rel="stylesheet" href="{% static 'base/css/bootstrap.css' %}"> -->
+        <link rel="stylesheet" href="{% static 'base/vendors/linericon/style.css' %}">
+        <link rel="stylesheet" href="{% static 'base/css/font-awesome.min.css' %}">
+        <link rel="stylesheet" href="{% static 'base/vendors/lightbox/simpleLightbox.css' %}">
+        <link rel="stylesheet" href="{% static 'base/vendors/nice-select/css/nice-select.css' %}">
+        <!-- main css -->
+        <link rel="stylesheet" href="{% static 'base/css/style.css' %}">
+        <link rel="stylesheet" href="{% static 'base/css/responsive.css' %}">
+    </head>
+<body>    
+    
+    <div id='container'>
+        <div class='column-6'>
+            <div id='left-wrapper'>
+                <!-- <img id='profile-pic' src="{% static 'images/download.png' %}"> -->
+                <div id='left-wrapper-header' >
+                    <h3 style="color:Green;">Payment Information</h3>
+                    <hr>
+
+                </div>
+                <div style='clear:left'></div>
+                <div class="col-lg-9">
+
+                    <form class="row contact_form" action="{% url 'change' %}" method="post" id="simpleCheckout-form">
+                            {% csrf_token %}
+
+                            <div class="col-md-6">
+                                <h4>Contribution of $</h4>
+                                <div class="form-group">    
+                                    <div class="dollar">
+                                        <input type="number" class="form-control" id="amount" name="amount" placeholder="Enter your amount">
+                                    </div>
+                                </div>
+                                <div class="col-md-12 text-right">
+                                      <button type="submit" class="btn primary_btn">Via Paypal</button>
+                                </div>
+                                <br>
+                                
+                            </div>       
+                    </form>
+                    
+                </div>
+            </div>
+        </div>
+    </div>
+   
+        <!-- Optional JavaScript -->
+        <!-- jQuery first, then Popper.js, then Bootstrap JS -->
+        <script src="{% static 'base/js/jquery-3.2.1.min.js' %}"></script>
+        <script src="{% static 'base/js/popper.js' %}"></script>
+        <script src="{% static 'base/js/bootstrap.min.js' %}"></script>
+        <script src="{% static 'base/js/stellar.js' %}"></script>
+        <script src="{% static 'base/vendors/lightbox/simpleLightbox.min.js' %}"></script>
+        <script src="{% static 'base/vendors/nice-select/js/jquery.nice-select.min.js' %}"></script>
+        <script src="{% static 'base/js/jquery.ajaxchimp.min.js' %}"></script>
+        <script src="{% static 'base/js/mail-script.js' %}"></script>
+        <!-- contact js -->
+        <script src="{% static 'base/js/jquery.form.js' %}"></script>
+        <script src="{% static 'base/js/jquery.validate.min.js' %}"></script>
+        <script src="js/contact.js"></script>
+        <!--gmaps Js-->
+        <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCjCGmQ0Uq4exrzdcL6rvxywDDOvfAu6eE"></script>
+        <script src="{% static 'base/js/gmaps.min.js' %}"></script>
+        <script src="{% static 'base/js/theme.js' %}"></script>
+
+</body>
+</html>
