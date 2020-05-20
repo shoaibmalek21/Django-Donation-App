@@ -1,6 +1,9 @@
 from django.shortcuts import render, redirect
 from django.urls import reverse
 from django.http import JsonResponse
+from django.core.mail import send_mail
+
+from . models import *
 import stripe
 import json
 
@@ -10,7 +13,22 @@ def index(request):
 	return render(request, 'index.html')
 
 def contact(request):
-	return render(request, 'contact.html')
+	if request.method == "POST":
+		message_name = request.POST['name']	
+		message_email = request.POST['email']	
+		message_subject = request.POST['subject']	
+		message = request.POST['message']	
+
+		send_mail(
+				message_name,
+				message,
+				message_email,
+				['shoaib@gmail.com'],
+			)
+		# contact_data = Contact()
+		return render(request, 'contact.html', {'message_name':message_name,'message_email':message_email,'message_subject':message_subject,'message':message})
+	else:
+		return render(request, 'contact.html', {})
 
 def about(request):
 	return render(request, 'about-us.html')
